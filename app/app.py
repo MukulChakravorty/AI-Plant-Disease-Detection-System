@@ -8,7 +8,6 @@ from tensorflow.keras.models import load_model
 
 import os
 import sys
-
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -33,6 +32,7 @@ st.set_page_config(
 # -------------------------------
 # Load Trained CNN Model
 # -------------------------------
+
 
 MODEL_PATH = os.path.join(
     os.path.dirname(__file__),
@@ -90,13 +90,23 @@ def predict_disease(img):
     # Convert to Array
     img_array = image.img_to_array(img)
 
+
     # Add Batch Dimension
     img_array = np.expand_dims(img_array, axis=0)
 
     # Prediction
     prediction = cnn_model.predict(img_array, verbose=0)
 
-    predicted_class = class_names[np.argmax(prediction)]
+    predicted_index = int(np.argmax(prediction))
+    st.write("Predicted Index:", predicted_index)
+
+    top5 = np.argsort(prediction[0])[-5:][::-1]
+
+    st.write("Top 5 Predictions")
+    for idx in top5:
+        st.write(f"{idx} | {class_names[idx]} | {prediction[0][idx]:.4f}")
+
+    predicted_class = class_names[predicted_index]
     confidence = float(np.max(prediction))
     display_name = (
     predicted_class

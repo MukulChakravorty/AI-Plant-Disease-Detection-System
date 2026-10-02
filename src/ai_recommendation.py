@@ -2,38 +2,26 @@ import os
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 
-
-# Loading Environment Variables:
-
 load_dotenv()
 
-# Read Hugging Face Token:
-
-HF_TOKEN = os.getenv('HF_TOKEN')
-
-# Create Hugging Face Client:
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 client = InferenceClient(
-    provider='together',
+    provider="auto",
     api_key=HF_TOKEN
 )
 
-def get_treatment_recommendation(disease_name):
-    """
-    Generate AI-powered treatment recommendation
-    for a predicted plant disease.
-    """
 
+def get_treatment_recommendation(disease_name):
     response = client.chat.completions.create(
-        model="Qwen/Qwen2.5-7B-Instruct",
+        model="Qwen/Qwen3-4B-Instruct-2507",
         messages=[
             {
                 "role": "user",
                 "content": f"""
 The predicted plant disease is: {disease_name}.
 
-Provide the following in simple language:
-
+Provide:
 1. Disease Description
 2. Symptoms
 3. Causes
@@ -45,7 +33,7 @@ Keep the response well-structured.
 """
             }
         ],
-        max_tokens=500
+        max_tokens=500,
     )
 
     return response.choices[0].message.content
